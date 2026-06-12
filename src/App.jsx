@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
 
-export default function App() {useEffect(() => {
-  const saved = localStorage.getItem("likes");
-  if (saved) {
-    setLikes(JSON.parse(saved));
-  }
-}, []);
+export default function App() {
   const [likes, setLikes] = useState({});
-  const [wallet, setWallet] = useState(null);useEffect(() => {
-  const saved = localStorage.getItem("likes");
-  if (saved) {
-    setLikes(JSON.parse(saved));
-  }
-}, []);useEffect(() => {
-  localStorage.setItem("likes", JSON.stringify(likes));
-}, [likes]);
+  const [wallet, setWallet] = useState(null);
+
+  // Load likes from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("likes");
+    if (saved) {
+      setLikes(JSON.parse(saved));
+    }
+  }, []);
+
+  // Save likes to localStorage
+  useEffect(() => {
+    localStorage.setItem("likes", JSON.stringify(likes));
+  }, [likes]);
 
   const nfts = [
     {
@@ -48,19 +49,19 @@ export default function App() {useEffect(() => {
   };
 
   const connectWallet = async () => {
-  if (window.ethereum) {
-    try {
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      setWallet(accounts[0]);
-    } catch (err) {
-      alert("Wallet connection failed");
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        setWallet(accounts[0]);
+      } catch (err) {
+        alert("Wallet connection failed");
+      }
+    } else {
+      alert("Please install MetaMask");
     }
-  } else {
-    alert("Please install MetaMask");
-  }
-};
+  };
 
   return (
     <div style={styles.page}>
@@ -70,7 +71,7 @@ export default function App() {useEffect(() => {
         <h2>NFT WORLD 🚀</h2>
 
         <button onClick={connectWallet} style={styles.walletBtn}>
-          {wallet ? wallet : "Connect Wallet"}
+          {wallet ? wallet.slice(0, 6) + "..." + wallet.slice(-4) : "Connect Wallet"}
         </button>
       </div>
 
