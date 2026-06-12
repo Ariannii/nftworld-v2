@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 
-export default function App() {
+export default function App() {useEffect(() => {
+  const saved = localStorage.getItem("likes");
+  if (saved) {
+    setLikes(JSON.parse(saved));
+  }
+}, []);
   const [likes, setLikes] = useState({});
   const [wallet, setWallet] = useState(null);
 
