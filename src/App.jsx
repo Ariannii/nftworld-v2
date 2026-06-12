@@ -3,16 +3,15 @@ import { useState, useEffect } from "react";
 export default function App() {
   const [likes, setLikes] = useState({});
   const [wallet, setWallet] = useState(null);
+  const [page, setPage] = useState("home");
 
-  // Load likes from localStorage
+  // Load likes
   useEffect(() => {
     const saved = localStorage.getItem("likes");
-    if (saved) {
-      setLikes(JSON.parse(saved));
-    }
+    if (saved) setLikes(JSON.parse(saved));
   }, []);
 
-  // Save likes to localStorage
+  // Save likes
   useEffect(() => {
     localStorage.setItem("likes", JSON.stringify(likes));
   }, [likes]);
@@ -59,48 +58,78 @@ export default function App() {
         alert("Wallet connection failed");
       }
     } else {
-      alert("Please install MetaMask");
+      alert("Install MetaMask");
     }
   };
 
+  const likedNFTs = nfts.filter(nft => likes[nft.id] > 0);
+
   return (
     <div style={styles.page}>
-      
+
+      {/* NAV */}
+      <div style={styles.nav}>
+        <button onClick={() => setPage("home")}>Home</button>
+        <button onClick={() => setPage("profile")}>Profile</button>
+      </div>
+
       {/* HEADER */}
       <div style={styles.header}>
         <h2>NFT WORLD 🚀</h2>
 
         <button onClick={connectWallet} style={styles.walletBtn}>
-          {wallet ? wallet.slice(0, 6) + "..." + wallet.slice(-4) : "Connect Wallet"}
+          {wallet
+            ? wallet.slice(0, 6) + "..." + wallet.slice(-4)
+            : "Connect Wallet"}
         </button>
       </div>
 
-      {/* TITLE */}
-      <div style={{ marginTop: 20 }}>
-        <h1>Explore Digital Assets</h1>
-        <p style={{ opacity: 0.6 }}>
-          Buy • Sell • Collect NFTs
-        </p>
-      </div>
+      {/* HOME PAGE */}
+      {page === "home" && (
+        <>
+          <h1>Explore NFTs</h1>
 
-      {/* GRID */}
-      <div style={styles.grid}>
-        {nfts.map((nft) => (
-          <div key={nft.id} style={styles.card}>
-            <img src={nft.img} style={styles.img} />
+          <div style={styles.grid}>
+            {nfts.map(nft => (
+              <div key={nft.id} style={styles.card}>
+                <img src={nft.img} style={styles.img} />
+                <h3>{nft.name}</h3>
+                <p>{nft.price}</p>
 
-            <h3>{nft.name}</h3>
-            <p>{nft.price}</p>
-
-            <button
-              onClick={() => like(nft.id)}
-              style={styles.likeBtn}
-            >
-              ❤️ {likes[nft.id] || 0}
-            </button>
+                <button onClick={() => like(nft.id)}>
+                  ❤️ {likes[nft.id] || 0}
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
+
+      {/* PROFILE PAGE */}
+      {page === "profile" && (
+        <div>
+          <h1>👤 Profile</h1>
+
+          <div style={styles.box}>
+            <p><b>Wallet:</b></p>
+            <p>{wallet || "Not connected"}</p>
+          </div>
+
+          <h2>❤️ Liked NFTs</h2>
+
+          <div style={styles.grid}>
+            {likedNFTs.length === 0 && <p>No liked NFTs yet</p>}
+
+            {likedNFTs.map(nft => (
+              <div key={nft.id} style={styles.card}>
+                <img src={nft.img} style={styles.img} />
+                <h3>{nft.name}</h3>
+                <p>{nft.price}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -113,6 +142,11 @@ const styles = {
     padding: 20,
     fontFamily: "Arial"
   },
+  nav: {
+    display: "flex",
+    gap: 10,
+    marginBottom: 10
+  },
   header: {
     display: "flex",
     justifyContent: "space-between",
@@ -123,20 +157,18 @@ const styles = {
     background: "#2563eb",
     border: "none",
     borderRadius: 8,
-    color: "white",
-    cursor: "pointer"
+    color: "white"
   },
   grid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
     gap: 20,
-    marginTop: 30
+    marginTop: 20
   },
   card: {
     background: "#111827",
     padding: 15,
-    borderRadius: 12,
-    border: "1px solid #222"
+    borderRadius: 12
   },
   img: {
     width: "100%",
@@ -144,13 +176,10 @@ const styles = {
     objectFit: "cover",
     borderRadius: 10
   },
-  likeBtn: {
-    marginTop: 10,
-    padding: "6px 10px",
-    background: "#1d4ed8",
-    border: "none",
-    borderRadius: 6,
-    color: "white",
-    cursor: "pointer"
+  box: {
+    background: "#111827",
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20
   }
 };
