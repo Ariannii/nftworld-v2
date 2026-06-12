@@ -7,7 +7,14 @@ export default function App() {useEffect(() => {
   }
 }, []);
   const [likes, setLikes] = useState({});
-  const [wallet, setWallet] = useState(null);
+  const [wallet, setWallet] = useState(null);useEffect(() => {
+  const saved = localStorage.getItem("likes");
+  if (saved) {
+    setLikes(JSON.parse(saved));
+  }
+}, []);useEffect(() => {
+  localStorage.setItem("likes", JSON.stringify(likes));
+}, [likes]);
 
   const nfts = [
     {
