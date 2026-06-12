@@ -35,10 +35,20 @@ export default function App() {
     setLikes({ ...likes, [id]: (likes[id] || 0) + 1 });
   };
 
-  const connectWallet = () => {
-    // فعلاً نمایشی
-    setWallet("0xA1...9F3C");
-  };
+  const connectWallet = async () => {
+  if (window.ethereum) {
+    try {
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      setWallet(accounts[0]);
+    } catch (err) {
+      alert("Wallet connection failed");
+    }
+  } else {
+    alert("Please install MetaMask");
+  }
+};
 
   return (
     <div style={styles.page}>
